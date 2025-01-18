@@ -21,3 +21,7 @@ LIMIT 10;
 
 
 /*To determnd the total number of social media engagements*/
+SELECT tk.*, yt.YouTube_Likes, yt.YouTube_Views
+FROM ticktok_metrics AS tk
+INNER JOIN youtube_metrics AS yt ON tk.track_id = yt.track_id
+LIMIT 10;
