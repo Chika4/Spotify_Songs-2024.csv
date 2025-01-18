@@ -93,6 +93,3 @@ INNER JOIN pandora ON soundcloud.track_id = pandora.track_id
 INNER JOIN spotify ON soundcloud.track_id = spotify.track_id
 ORDER BY Total_Streams ASC
 LIMIT 10;
-
-/* This query aims to gather the total number of social media engagements, 
-playlist reach, and radio station plays*/
