@@ -1,26 +1,21 @@
-/* This list the top 20 most streamed tracks in spotify with explicit content*/
 
-SELECT track_info.Track_ID, track_info.Artist, track_info.Track,
-    spotify_metrics.Spotify_Streams, track_info.Explicit_Track
-FROM track_info 
-INNER JOIN spotify_metrics ON track_info.Track_ID = spotify_metrics.Track_ID
-WHERE Explicit_Track is TRUE
-AND spotify_streams IS NOT NULL
-ORDER BY Spotify_Streams DESC
-LIMIT 20;
+/* This query aims to gather the total number of playlist reach,so as to determine 
+Total potential audience size of the playlists featuring the song.*/
 
-/* Count of explicit content performance in spotify ratings */
+SELECT ti.track_id, ti.track, ti.Artist, dm.Deezer_Playlist_Reach,
+    sm.Spotify_Playlist_Reach, yt.YouTube_Playlist_Reach,
+    (dm.Deezer_Playlist_Reach + sm.Spotify_Playlist_Reach + 
+    yt.YouTube_Playlist_Reach) AS total_Playlist_reach
+FROM track_info AS ti
+INNER JOIN deezer_metrics AS dm ON ti.track_id = dm.track_id
+INNER JOIN spotify_metrics AS sm ON ti.track_id = sm.track_id
+INNER JOIN youtube_metrics AS yt ON ti.track_id = yt.track_id
+WHERE dm.Deezer_Playlist_Reach IS NOT NULL
+    AND sm.Spotify_Playlist_Reach IS NOT NULL
+    AND yt.YouTube_Playlist_Reach IS NOT NULL
+ORDER BY total_Playlist_reach DESC
+LIMIT 10;
 
-SELECT SUM(spotify_metrics.Spotify_Streams) AS stream_count, 
-    COUNT(track_info.Explicit_Track) AS explicit_count,
-    track_info.Explicit_Track
-FROM track_info 
-INNER JOIN spotify_metrics ON track_info.Track_ID = spotify_metrics.Track_ID
-WHERE spotify_streams IS NOT NULL
-GROUP BY track_info.explicit_track
-ORDER BY stream_count DESC;
-
-/* Comparison of top performing songs listed accros all streaming platforms */
 WITH soundcloud AS (
     SELECT ti.Track_ID, ti.track, ti.Artist,
         opm.Soundcloud_Streams
@@ -57,7 +52,14 @@ INNER JOIN spotify ON soundcloud.track_id = spotify.track_id
 ORDER BY Total_Streams DESC
 LIMIT 10;
 
-/* Comparison of least performing songs listed accros all streaming platforms */
+
+/* This query aims to gather the total number of Measures how many people the 
+song could potentially reach*/
+
+/* This query aims to gather the total number of social media engagements, 
+playlist reach, and radio station plays so as to deermine how widely a 
+song is exposed to listeners.*/
+
 WITH soundcloud AS (
     SELECT ti.Track_ID, ti.track, ti.Artist,
         opm.Soundcloud_Streams
@@ -94,5 +96,3 @@ INNER JOIN spotify ON soundcloud.track_id = spotify.track_id
 ORDER BY Total_Streams ASC
 LIMIT 10;
 
-/* This query aims to gather the total number of social media engagements, 
-playlist reach, and radio station plays*/
