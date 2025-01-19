@@ -16,6 +16,45 @@ WHERE dm.Deezer_Playlist_Reach IS NOT NULL
 ORDER BY total_Playlist_reach DESC
 LIMIT 10;
 
+/* This query seeks to determine the total potential audience of the top performing 
+songs and what platform contributed largely to that*/
+
+WITH all_streams AS (
+    SELECT ti.Track_ID, ti.track, ti.Artist,
+        (opm.Soundcloud_Streams + pm.pandora_streams + sm.spotify_streams) AS 
+        Total_Streams
+    FROM track_info AS ti
+    INNER JOIN other_platform_metrics AS opm ON ti.track_id = opm.track_id
+    INNER JOIN pandora_metrics AS pm ON ti.track_id = pm.track_id
+    INNER JOIN spotify_metrics AS sm ON ti.track_id = sm.track_id
+    WHERE ti.Artist IS NOT NULL
+    AND opm.soundcloud_streams IS NOT NULL
+    AND pm.pandora_streams IS NOT NULL
+    AND opm.soundcloud_streams IS NOT NULL
+    AND sm.spotify_streams IS NOT NULL
+    ORDER BY total_streams DESC
+
+), total_reach AS(
+    SELECT ti.track_id, ti.track, ti.Artist, dm.Deezer_Playlist_Reach,
+        sm.Spotify_Playlist_Reach, yt.YouTube_Playlist_Reach,
+        (dm.Deezer_Playlist_Reach + sm.Spotify_Playlist_Reach + 
+        yt.YouTube_Playlist_Reach) AS total_Playlist_reach
+    FROM track_info AS ti
+    INNER JOIN deezer_metrics AS dm ON ti.track_id = dm.track_id
+    INNER JOIN spotify_metrics AS sm ON ti.track_id = sm.track_id
+    INNER JOIN youtube_metrics AS yt ON ti.track_id = yt.track_id
+    WHERE dm.Deezer_Playlist_Reach IS NOT NULL
+        AND sm.Spotify_Playlist_Reach IS NOT NULL
+        AND yt.YouTube_Playlist_Reach IS NOT NULL
+    ORDER BY total_Playlist_reach DESC
+)
+
+SELECT total_reach.*, all_streams.Total_Streams
+FROM total_reach
+INNER JOIN all_streams ON total_reach.track_id = all_streams.track_id
+ORDER BY all_streams.total_streams DESC
+LIMIT 10;
+
 /* This query aims to determine the total number of playlist a particular track was included*/
 
 
