@@ -1,4 +1,4 @@
-/* This list the top 20 most streamed tracks in spotify with explicit content*/
+/* This list the top most streamed tracks in spotify with explicit content*/
 
 SELECT track_info.Track_ID, track_info.Artist, track_info.Track,
     spotify_metrics.Spotify_Streams, track_info.Explicit_Track
@@ -7,7 +7,7 @@ INNER JOIN spotify_metrics ON track_info.Track_ID = spotify_metrics.Track_ID
 WHERE Explicit_Track is TRUE
 AND spotify_streams IS NOT NULL
 ORDER BY Spotify_Streams DESC
-LIMIT 20;
+LIMIT 10;
 
 /* Count of explicit content performance in spotify ratings */
 
@@ -56,6 +56,7 @@ INNER JOIN pandora ON soundcloud.track_id = pandora.track_id
 INNER JOIN spotify ON soundcloud.track_id = spotify.track_id
 ORDER BY Total_Streams DESC
 LIMIT 10;
+
 
 /* Comparison of least performing songs listed accros all streaming platforms */
 WITH soundcloud AS (

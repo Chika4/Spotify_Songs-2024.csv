@@ -7,7 +7,7 @@ Key details such as track names, artists, release dates, ISRC codes, streaming s
 
 To support this analysis, I developed a database called spotify_project_2024 to systematically organize and process the data. The database includes tables for storing track details, popularity metrics, and platform-specific statistics for services such as Spotify, YouTube, TikTok, Deezer, Pandora, and others. 
 These tables are interconnected using unique identifiers like Track ID and ISRC, ensuring data consistency and facilitating seamless queries. 
-I loaded the dataset into the database using the COPY command, preparing it for detailed analysis and insights. See code (HERE){/Analysis.sql}
+I loaded the dataset into the database using the COPY command, preparing it for detailed analysis and insights. See code (Spotify_Songs 2024.csv){spotify_project}
 
 ### Objectives
 
@@ -70,7 +70,7 @@ AND spotify_streams IS NOT NULL
 ORDER BY Spotify_Streams DESC;
 ```
 Blinding Lights by The Weeknd has the highest total streams (4,799,427,953). This track outperforms all others, driven primarily by its dominance on Spotify (4.28 billion streams) While Demons by Imagine Dragons dominates on Pandora with over 1 billion streams, and a total streams of about 3.4billion across the three platforms and Lucid Dreams by Juice WRLD had a fair advantage compare to all other artist on sounclould.
-!(Top streams)(Images\Top streams.PNG)
+! (Top streams)(Images\Top streams.PNG)
 
 
 On the other hand " by ALPHA 9 had the lowest overall stream count, with only 98,096 streams combined. "Miracle (Extended)" by Calvin Harris showed a significant disparity, performing well on Spotify but poorly on SoundCloud and Pandora. Interestingly, "I Am Not Okay" by Jelly Roll achieved a substantial number of streams on Pandora, suggesting a strong following on that platform.
