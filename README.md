@@ -7,7 +7,7 @@ Key details such as track names, artists, release dates, ISRC codes, streaming s
 
 To support this analysis, I developed a database called spotify_project_2024 to systematically organize and process the data. The database includes tables for storing track details, popularity metrics, and platform-specific statistics for services such as Spotify, YouTube, TikTok, Deezer, Pandora, and others. 
 These tables are interconnected using unique identifiers like Track ID and ISRC, ensuring data consistency and facilitating seamless queries. 
-I loaded the dataset into the database using the COPY command, preparing it for detailed analysis and insights. See code (Spotify_Songs 2024.csv){spotify_project}
+I loaded the dataset into the database using the COPY command, preparing it for detailed analysis and insights. See code[Spotify_Songs 2024.csv]{./spotify_project.sql}
 
 ### Objectives
 
