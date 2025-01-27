@@ -74,7 +74,7 @@ Blinding Lights by The Weeknd has the highest total streams (4,799,427,953). Thi
 
 On the other hand " by ALPHA 9 had the lowest overall stream count, with only 98,096 streams combined. "Miracle (Extended)" by Calvin Harris showed a significant disparity, performing well on Spotify but poorly on SoundCloud and Pandora. Interestingly, "I Am Not Okay" by Jelly Roll achieved a substantial number of streams on Pandora, suggesting a strong following on that platform.
 
-**2 Total playlist reach of top performing tracks with the highest streams;**
+**2. Total playlist reach of top performing tracks with the highest streams;**
 
 This query aims to gather the total number of playlist reach so as to determine how widely the song was exposed to listeners on various non-social media platforms—Deezer, Spotify, and YouTube. This measures the total potential audience size of the playlists. 
 
@@ -127,4 +127,124 @@ Interestingly, some artists achieve high stream counts despite lower playlist re
 The correlation coefficient between total playlist reach and total streams is approximately 0.27, indicating a weak positive relationship. This suggests that high playlist reach doesn't always guarantee equivalent streaming success, pointing to the importance of audience loyalty, listener engagement, platform-specific popularity, repeat plays, and marketing efforts likely play a critical role in driving streams. 
 
 Overall, YouTube's dominance in playlist reach and Spotify's strong contribution to streams make them essential platforms for artist success.
+
+**3. Total playlist count of top performing tracks with the highest streams:**
+
+```sql
+WITH all_streams AS (
+    SELECT ti.Track_ID, ti.track, ti.Artist,
+        (opm.Soundcloud_Streams + pm.pandora_streams + sm.spotify_streams) AS 
+        Total_Streams
+    FROM track_info AS ti
+    INNER JOIN other_platform_metrics AS opm ON ti.track_id = opm.track_id
+    INNER JOIN pandora_metrics AS pm ON ti.track_id = pm.track_id
+    INNER JOIN spotify_metrics AS sm ON ti.track_id = sm.track_id
+    WHERE ti.Artist IS NOT NULL
+    AND opm.soundcloud_streams IS NOT NULL
+    AND pm.pandora_streams IS NOT NULL
+    AND sm.spotify_streams IS NOT NULL
+    ORDER BY total_streams DESC
+
+), total_count AS(
+    SELECT ti.track_id, ti.track, ti.Artist, dm.deezer_playlist_count,
+        sm.Spotify_Playlist_Count, opm.apple_music_playlist_count,
+        opm.amazon_playlist_count,
+        (dm.deezer_playlist_count + sm.Spotify_Playlist_Count + opm.apple_music_playlist_count
+         + opm.amazon_playlist_count) AS total_Playlist_count
+    FROM track_info AS ti
+    INNER JOIN deezer_metrics AS dm ON ti.track_id = dm.track_id
+    INNER JOIN spotify_metrics AS sm ON ti.track_id = sm.track_id
+    INNER JOIN other_platform_metrics AS opm ON ti.track_id = opm.track_id
+    WHERE dm.deezer_playlist_count IS NOT NULL
+        AND sm.Spotify_Playlist_Count IS NOT NULL
+        AND opm.apple_music_playlist_count IS NOT NULL
+        AND opm.amazon_playlist_count IS NOT NULL
+    ORDER BY total_Playlist_count DESC
+)
+
+SELECT total_count.*, all_streams.Total_Streams
+FROM total_count
+INNER JOIN all_streams ON total_count.track_id = all_streams.track_id
+ORDER BY all_streams.total_streams DESC;
+```
+
+The query aims to investigate the relationship between streaming popularity and playlist inclusion and also identify the total playlist counts of the top streamed songs. 
+
+Here is a top 10 list
+| track_id | track                         | artist              | deezer_playlist_count | spotify_playlist_count | apple_music_playlist_count | amazon_playlist_count | total_playlist_count | total_streams      |
+|----------|-------------------------------|---------------------|------------------------|-------------------------|----------------------------|------------------------|----------------------|--------------------|
+| trk56    | Blinding Lights              | The Weeknd          | 564                    | 590,392                 | 859                        | 184                    | 591,999              | 4,799,427,953      |
+| trk54    | Shape of You                 | Ed Sheeran          | 512                    | 316,378                 | 465                        | 115                    | 317,470              | 4,721,173,764      |
+| trk263   | Starboy                      | The Weeknd          | 118                    | 366,133                 | 341                        | 67                     | 366,659              | 3,646,169,638      |
+| trk119   | Believer                     | Imagine Dragons      | 118                    | 335,880                 | 226                        | 71                     | 336,295              | 3,623,749,068      |
+| trk40    | Dance Monkey                 | Tones And I         | 584                    | 375,201                 | 549                        | 121                    | 376,455              | 3,481,938,469      |
+| trk852   | Demons                       | Imagine Dragons      | 88                     | 263,640                 | 70                         | 29                     | 263,827              | 3,384,936,132      |
+| trk27    | STAY (with Justin Bieber)    | The Kid LAROI       | 166                    | 451,732                 | 513                        | 128                    | 452,539              | 3,340,225,421      |
+| trk816   | Sweater Weather              | The Neighbourhood   | 114                    | 415,650                 | 189                        | 9                      | 415,962              | 3,303,512,892      |
+| trk486   | Let Her Go                   | Passenger           | 12                     | 84,884                  | 153                        | 14                     | 85,063               | 3,302,263,913      |
+| trk150   | Lucid Dreams                 | Juice WRLD          | 54                     | 339,306                 | 153                        | 36                     | 339,549              | 3,065,249,446      |
+
+
+
+The dataset strongly highlights Spotify's dominance in playlist inclusions for the selected tracks, but it also suggests a potential underrepresentation of other streaming platforms like Deezer, Apple Music, and Amazon Music. For example, "Blinding Lights" by The Weeknd has 590,392 Spotify playlists compared to only 564 on Deezer and 859 on Apple Music. The stark difference may indicate not only Spotify's influence but also the possibility that data from other platforms is incomplete or not equally comprehensive.
+
+![](./Images/playlistcount_correlation.PNG)
+
+The correlation coefficient of 0.86 between total playlist count and total streams indicates a strong positive relationship. This means that as the number of playlists a song is added to increases, the total number of streams also tends to increase significantly. The high correlation suggests that playlist inclusion is a key driver of streaming performance.
+
+**4. Social media Engagement**
+
+This query aims to analyze and rank music tracks by combining data on their streaming performance and audience engagement across multiple platforms. It calculates total engagement by summing metrics from TikTok (likes, posts, and views) and YouTube (likes and views) for each track and computes total streams by aggregating metrics from SoundCloud, Pandora, and Spotify. The results are joined to create a comprehensive dataset that includes each track's total streams and total engagement, filtered to exclude incomplete data and sorted by total streams in descending order to highlight the most popular and engaging tracks
+
+```sql
+WITH engagement AS (
+    SELECT tk.*, yt.YouTube_Likes, yt.YouTube_Views, 
+        (tk.tiktok_likes + tk.tiktok_posts + tk.tiktok_views +
+        yt.youtube_likes + yt.youtube_views) AS total_engagement
+    FROM ticktok_metrics AS tk
+    INNER JOIN youtube_metrics AS yt ON tk.track_id = yt.track_id
+
+), all_streams AS (
+    SELECT ti.Track_ID, ti.track, ti.Artist,
+        (opm.Soundcloud_Streams + pm.pandora_streams + sm.spotify_streams) AS 
+        Total_Streams
+    FROM track_info AS ti
+    INNER JOIN other_platform_metrics AS opm ON ti.track_id = opm.track_id
+    INNER JOIN pandora_metrics AS pm ON ti.track_id = pm.track_id
+    INNER JOIN spotify_metrics AS sm ON ti.track_id = sm.track_id
+    WHERE ti.Artist IS NOT NULL
+    AND opm.soundcloud_streams IS NOT NULL
+    AND pm.pandora_streams IS NOT NULL
+    AND sm.spotify_streams IS NOT NULL
+    ORDER BY total_streams DESC
+)
+
+SELECT all_streams.*, engagement.total_engagement
+FROM engagement
+INNER JOIN all_streams ON engagement.track_id = all_streams.track_id
+WHERE engagement.* is NOT NULL
+AND all_streams.* IS NOT NULL
+ORDER BY total_streams DESC;
+```
+
+| track_id | track                         | artist              | total_streams      | total_engagement    |
+|----------|-------------------------------|---------------------|--------------------|---------------------|
+| trk56    | Blinding Lights              | The Weeknd          | 4,799,427,953      | 4,685,282,362       |
+| trk54    | Shape of You                 | Ed Sheeran          | 4,721,173,764      | 10,577,314,810      |
+| trk263   | Starboy                      | The Weeknd          | 3,646,169,638      | 3,273,428,308       |
+| trk119   | Believer                     | Imagine Dragons      | 3,623,749,068      | 10,872,637,418      |
+| trk40    | Dance Monkey                 | Tones And I         | 3,481,938,469      | 9,659,784,797       |
+| trk852   | Demons                       | Imagine Dragons      | 3,384,936,132      | 2,073,112,173       |
+| trk27    | STAY (with Justin Bieber)    | The Kid LAROI       | 3,340,225,421      | 27,238,489,338      |
+| trk816   | Sweater Weather              | The Neighbourhood   | 3,303,512,892      | 4,903,993,400       |
+| trk486   | Let Her Go                   | Passenger           | 3,302,263,913      | 4,203,925,341       |
+| trk150   | Lucid Dreams                 | Juice WRLD          | 3,065,249,446      | 1,380,942,467       |
+
+The data reveals that songs with high total streams also exhibit varying levels of total engagement, suggesting differing audience interaction dynamics. For instance, while "Blinding Lights" by The Weeknd has the highest streams (4.8 billion), its engagement (4.6 billion) is relatively aligned. On the other hand, "Shape of You" by Ed Sheeran has nearly as many streams (4.7 billion) but much higher engagement (10.5 billion), indicating significant audience interaction beyond just listening. Similarly, "Believer" by Imagine Dragons and "Dance Monkey" by Tones And I show strong engagement relative to their streams, while "Lucid Dreams" by Juice WRLD exhibits lower engagement compared to its streams.
+
+This variability suggests that certain tracks may resonate with listeners differently, prompting more extensive interactions like shares, likes, or comments, highlighting the importance of analyzing engagement alongside streams to fully understand a song’s impact.
+
+![](./Images/correlation_social%20eng.PNG)
+
+The correlation coefficient of 0.37 between total streams and total engagement indicates a weak to moderate positive relationship, meaning that as engagement (such as likes, shares, or comments) increases, streams also tend to rise, but the relationship is not particularly strong. This suggests that while engagement may have some influence on streams, it is not the primary driver, and other factors like playlist inclusions, marketing campaigns
 
