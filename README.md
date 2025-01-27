@@ -1,6 +1,6 @@
 # 2024 Spotify Most-Streamed Songs
 
-### Overview
+## Overview
 
 This project focuses on compiling and analyzing the most-streamed songs on Spotify in 2024. The dataset provides comprehensive insights into track attributes, popularity metrics, and cross-platform presence, serving as a valuable resource for music analysts, enthusiasts, and industry professionals. 
 Key details such as track names, artists, release dates, ISRC codes, streaming statistics, and visibility on platforms like YouTube and TikTok are included, enabling in-depth performance analysis and trend identification.
@@ -9,7 +9,7 @@ To support this analysis, I developed a database called spotify_project_2024 to 
 These tables are interconnected using unique identifiers like Track ID and ISRC, ensuring data consistency and facilitating seamless queries. 
 I loaded the dataset into the database using the COPY command, preparing it for detailed analysis and insights. See code: [Spotify_Songs 2024.csv](./spotify_project.sql)
 
-### Objectives
+## Objectives
 
 The primary objectives of this project are:
 - Examine the performance of songs listed across all streaming platforms.
@@ -17,7 +17,7 @@ The primary objectives of this project are:
 - Measure the total playlist the song is included in and the relationship between playlist count and total streams.
 - Examine the relationship between total engagement and streams accros all platforms
 
-### Dataset Details
+## Dataset Details
 
 The dataset includes:
 -	Track Name: Name of the song.
@@ -49,12 +49,12 @@ The dataset includes:
 -	Shazam Counts: Total number of times the song has been Shazamed.
 -	Explicit Track: Indicates whether the song contains explicit content.
 
-### Tools I Used.
+## Tools I Used
 - **SQL:** Used to load and query data from my locale database
 - **Excel:** This was used to carryout simple correlation analysis 
 - **PostgreSQL:** For database management
 
-### Analysis
+## Analysis
 **1. Examine the performance of songs listed across all streaming platforms;**
 To gain a comprehensive understanding of song performance across various platforms, 
 this analysis focused on examining the top and bottom songs based on streaming data from three major platforms: SoundCloud, Pandora, and Spotify. 
@@ -116,15 +116,16 @@ INNER JOIN all_streams ON total_reach.track_id = all_streams.track_id
 ORDER BY all_streams.total_streams DESC;
 ```
 
-This dataset highlights the playlist reach and total streams for various artists across Deezer, Spotify, and YouTube. The Kid LAROI leads in total playlist reach with over 4.4 billion, driven primarily by his exceptional performance on YouTube (4.3 billion). Similarly, Tones And I has a strong YouTube presence, contributing to her impressive playlist reach of 2.5 billion. In contrast, The Weeknd  and Ed Sheeran dominate in total streams, with 4.8 billion and 4.7 billion, respectively, reflecting their consistent popularity across platforms, particularly Spotify and YouTube. Despite Deezer's low contribution to playlist reach, Spotify and YouTube emerge as key platforms influencing an artist's overall performance.
+This dataset highlights the playlist reach and total streams for various artists across Deezer, Spotify, and YouTube. 
+The Kid LAROI leads in total playlist reach with over 4.4 billion, driven primarily by his exceptional performance on YouTube (4.3 billion). 
+Similarly, Tones And I has a strong YouTube presence, contributing to her impressive playlist reach of 2.5 billion. In contrast, The Weeknd  and Ed Sheeran dominate in total streams, with 4.8 billion and 4.7 billion, respectively, reflecting their consistent popularity across platforms, particularly Spotify and YouTube. 
+Despite Deezer's low contribution to playlist reach, Spotify and YouTube emerge as key platforms influencing an artist's overall performance.
 
 ![](./Images/Playlist%20graph.PNG)
 
-Interestingly, some artists achieve high stream counts despite lower playlist reach. For instance, Passenger and Juice WRLD convert their modest playlist reach into substantial streams, indicating strong listener engagement or repeat plays. 
+The correlation coefficient between total playlist reach and total streams is approximately 0.27, indicating a weak positive relationship. This suggests that high playlist reach doesn't always guarantee equivalent streaming success, pointing to the importance of audience loyalty, listener engagement, platform-specific popularity, repeat plays, and marketing efforts likely play a critical role in driving streams. 
 
 ![](./Images/correlation_png.png)
-
-The correlation coefficient between total playlist reach and total streams is approximately 0.27, indicating a weak positive relationship. This suggests that high playlist reach doesn't always guarantee equivalent streaming success, pointing to the importance of audience loyalty, listener engagement, platform-specific popularity, repeat plays, and marketing efforts likely play a critical role in driving streams. 
 
 Overall, YouTube's dominance in playlist reach and Spotify's strong contribution to streams make them essential platforms for artist success.
 
@@ -194,7 +195,9 @@ The correlation coefficient of 0.86 between total playlist count and total strea
 
 **4. Social media Engagement**
 
-This query aims to analyze and rank music tracks by combining data on their streaming performance and audience engagement across multiple platforms. It calculates total engagement by summing metrics from TikTok (likes, posts, and views) and YouTube (likes and views) for each track and computes total streams by aggregating metrics from SoundCloud, Pandora, and Spotify. The results are joined to create a comprehensive dataset that includes each track's total streams and total engagement, filtered to exclude incomplete data and sorted by total streams in descending order to highlight the most popular and engaging tracks
+This query aims to analyze and rank music tracks by combining data on their streaming performance and audience engagement across multiple platforms. 
+It calculates total engagement by summing metrics from TikTok (likes, posts, and views) and YouTube (likes and views) for each track and computes total streams by aggregating metrics from SoundCloud, Pandora, and Spotify.
+The results are joined to create a comprehensive dataset that includes each track's total streams and total engagement, filtered to exclude incomplete data and sorted by total streams in descending order to highlight the most popular and engaging tracks.
 
 ```sql
 WITH engagement AS (
@@ -246,5 +249,22 @@ This variability suggests that certain tracks may resonate with listeners differ
 
 ![](./Images/correlation_social%20eng.PNG)
 
-The correlation coefficient of 0.37 between total streams and total engagement indicates a weak to moderate positive relationship, meaning that as engagement (such as likes, shares, or comments) increases, streams also tend to rise, but the relationship is not particularly strong. This suggests that while engagement may have some influence on streams, it is not the primary driver, and other factors like playlist inclusions, marketing campaigns
+The correlation coefficient of 0.37 between total streams and total engagement indicates a weak to moderate positive relationship, meaning that as engagement (such as likes, shares, or comments) increases, streams also tend to rise, but the relationship is not particularly strong. 
+This suggests that while engagement may have some influence on streams, it is not the primary driver, and other factors like playlist inclusions, marketing campaigns
+
+## insights
+Interestingly, some artists achieve high stream counts despite lower playlist reach. For instance, Passenger and Juice WRLD convert their modest playlist reach into substantial streams, indicating strong listener engagement or repeat plays. 
+Also, a higher number of playlists featuring a song is strongly associated with a higher number of total streams for that song. 
+
+Essentially, the more playlists a song appears on, the more likely it is to be streamed frequently.
+This implies that playlist placements are a significant factor in driving a song's streaming success, highlighting the importance of playlist marketing strategies for artists and record labels.
+
+Lastly, the analysis revels that there is a week but positive relationship between total streams and social meadia engagement.
+This suggests that while engagement may have some influence on streams, it is not the primary driver, and other factors like playlist inclusions, marketing campaigns
+
+This weak correlation between social media engagement and total streams suggests that social media activity alone is not the primary driver of streaming success. Instead, other factors, such as playlist inclusions, targeted marketing campaigns, radio play, and even the song's genre or popularity trends, tend to play a more significant role in influencing streams.
+However, it is worth noting that social media engagement still holds value as a complementary tool. It helps generate buzz around a song, builds a connection with the audience, and provides opportunities for viral moments that can indirectly lead to higher streams.
+
+## Acknowledgments
+Nidula Elgiriyewithana. (2024). Most Streamed Spotify Songs 2024 [Data set]. Kaggle. https://doi.org/10.34740/KAGGLE/DSV/8700156
 
